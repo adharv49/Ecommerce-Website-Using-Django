@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'store/login.css' %}">
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Login to Your Account</h2>
+
+    {% if form.errors %}
+        <div class="error-message">Invalid username or password</div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Username -->
+        <input type="text" name="username" placeholder="Enter your username" required>
+
+        <!-- Password -->
+        <input type="password" name="password" placeholder="Enter your password" required>
+
+        <button type="submit">Login</button>
+        <p><a href="{% url 'password_reset' %}">Forgot your password?</a></p>
+
+    </form>
+
+    <!-- Register link -->
+    <p style="text-align:center; margin-top: 20px;">
+        Don't have an account?
+        <a href="{% url 'register' %}" class="create-user-btn">Create New User</a>
+    </p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,213 @@
+{% load static %}
+{% load store_filters  %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ product.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+        .price {
+            color: green;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .btn {
+            background-color: #6c5ce7;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        .wishlist-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .review-form {
+            margin-top: 30px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+        }
+        .reviews {
+            margin-top: 30px;
+        }
+        .review-box {
+            background: #f1f1f1;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        
+    </style>
+</head>
+<body>
+<button onclick="history.back()" style="padding: 8px 16px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer;">
+    ⬅️ Back
+</button>
+
+<div class="container">
+    <h1>{{ product.name }}</h1>
+
+    {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+    {% endif %}
+
+    <p class="price">₹{{ product.price }}</p>
+    <p>{{ product.description }}</p>
+
+    <!-- Add to Cart -->
+     {% if user.is_authenticated %}
+    <form method="GET" action="{% url 'add_to_cart' product.id %}" style="display:inline-block;">
+        <button type="submit" class="btn">Add to Cart</button>
+    </form>
+   
+    {% endif %}
+    <!-- Wishlist -->
+    {% if user.is_authenticated %}
+        
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            <button type="submit" class="wishlist-btn"  data-product-id="{{ product.id }}"  >
+                {% if product.id in wishlist_items %}
+                    ❤️
+                {% else %}
+                    🤍
+                {% endif %}
+            </button>
+        
+    
+    {% endif %}
+
+
+    {% if user.is_authenticated %}
+    <a href="{% url 'add_to_buy' product.id %}" style="padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;">
+    🛒 Buy Now
+</a>
+ {% else %}
+        <a href="{% url 'login' %}" style="border-radius: 8px; padding: 10px 16px; background-color: #007bff; 
+        color: white; text-decoration: none; display: inline-block;" >Login</a> to buy now
+    {% endif %}   
+
+    
+    <!-- Review Form -->
+    <div class="review-form">
+        <h3>Your Review</h3>
+
+        {% if user.is_authenticated %}
+        {% if user_reviews %}
+            {% if user_reviews|get_item:product.id %}
+                {% with user_review=user_reviews|get_item:product.id %}
+                    <form method="POST" action="{% url 'add_review' product.id %}">
+                        {% csrf_token %}
+                        <label>Rating:</label>
+                        <select name="rating" required>
+                            {% for i in "12345" %}
+                                <option value="{{ i }}" {% if user_review.rating == i|add:'0' %}selected{% endif %}>{{ i }} ⭐</option>
+                            {% endfor %}
+                        </select><br><br>
+                        <textarea name="comment" rows="4" maxlength="300" required>{{ user_review.comment }}</textarea><br><br>
+                        <button type="submit" class="btn">Update Review</button>
+                    </form>
+                    <form method="POST" action="{% url 'delete_review' product.id %}" style="margin-top: 10px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn" style="background-color: #e74c3c;">Delete Review</button>
+                    </form>
+                {% endwith %}
+            {% else %}
+                <form method="POST" action="{% url 'add_review' product.id %}">
+                    {% csrf_token %}
+                    <label>Rating:</label>
+                    <select name="rating" required>
+                        {% for i in "12345" %}
+                            <option value="{{ i }}">{{ i }} ⭐</option>
+                        {% endfor %}
+                    </select><br><br>
+                    <textarea name="comment" placeholder="Write your review..." rows="4" maxlength="300" required></textarea><br><br>
+                    <button type="submit" class="btn">Submit Review</button>
+                </form>
+            {% endif %}
+            {% endif %}
+        
+        {% endif %}
+         
+    </div>
+
+    <!-- All Reviews -->
+    <div class="reviews">
+        <h3>All Reviews</h3>
+        {% if product.reviews.all %}
+            {% for review in product.reviews.all %}
+                <div class="review-box">
+                    <strong>{{ review.user.username }}</strong> — {{ review.rating }} ⭐<br>
+                    <p>{{ review.comment }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No reviews yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+<script>
+    
+
+document.querySelectorAll('.wishlist-btn').forEach(button => {
+    button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const productId = this.dataset.productId;
+        fetch(`/wishlist/toggle/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'added') {
+                this.innerHTML = '❤️';
+            } else if (data.status === 'removed') {
+                this.innerHTML = '🤍';
+            } else if (data.error) {
+                alert(data.error);
+            }
+        });
+    });
+});  
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+</script>
+</html>

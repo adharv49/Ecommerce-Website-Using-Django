@@ -1,0 +1,266 @@
+{% load static %}
+{% load store_filters  %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MY STORE</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'store/style.css' %}">
+</head>
+<body>
+<a href="{% url 'home' %}"  class="home-button">
+  MY STORE
+</a>
+
+
+<div class="top-bar">
+  {% if user.is_authenticated %}
+  <form id="nav-select-form">
+  <label for="nav-select"><strong>Navigate:</strong></label>
+  <input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+
+  <select id="nav-selectt" name="nav" class="top-bar">
+ 
+    <option value="{% url 'home' %}" selected>🏠 Home</option>
+    <option value="{% url 'profile' %}">👤 Profile</option>
+    <option value="{% url 'wishlist' %}">💖 Wishlist</option>
+    <option value="{% url 'cart' %}">🛒 Cart</option>
+    <option value="{% url 'checkout' %}">🧾Checkout</option>
+
+    <option value="{% url 'logout' %}">🔓 Logout</option>
+  </select>
+</form>
+  {% else %}
+    <a href="{% url 'login' %}" style="border-radius: 8px; padding: 10px 16px; background-color: #007bff; 
+    color: white; text-decoration: none; display: inline-block;line-height: 1;height:15px;
+    min-width: 5px;">
+    Login</a>
+{% endif %}
+
+  
+
+  <!-- Category Dropdown -->
+  <form method="get" class="inline-form">
+    <select name="category" onchange="this.form.submit()" class="top-bar" id="category">
+      <option value="" {% if not selected_category %}selected{% endif %}>All Categories</option>
+      {% for category in categories %}
+        <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
+          {{ category.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <!-- Price Filter -->
+  <form method="get" class="inline-form">
+    <select name="price" onchange="this.form.submit()" class="top-bar" id="price" >
+      <option value="" {% if not request.GET.price %}selected{% endif %}>All Prices</option>
+      <option value="0-499" {% if request.GET.price == '0-499' %}selected{% endif %}>₹0 – ₹499</option>
+      <option value="500-999" {% if request.GET.price == '500-999' %}selected{% endif %}>₹500 – ₹999</option>
+      <option value="1000-1999" {% if request.GET.price == '1000-1999' %}selected{% endif %}>₹1000 – ₹1999</option>
+      <option value="2000+" {% if request.GET.price == '2000+' %}selected{% endif %}>₹2000+</option>
+    </select>
+  </form>
+
+  <!-- Rating Filter -->
+  <form method="get" class="inline-form">
+    <select name="min_rating" onchange="this.form.submit()" class="top-bar" id="rating">
+      <option value="">Min Rating</option>
+      <option value="1" {% if request.GET.min_rating == '1' %}selected{% endif %}>1 ⭐</option>
+      <option value="2" {% if request.GET.min_rating == '2' %}selected{% endif %}>2 ⭐</option>
+      <option value="3" {% if request.GET.min_rating == '3' %}selected{% endif %}>3 ⭐</option>
+      <option value="4" {% if request.GET.min_rating == '4' %}selected{% endif %}>4 ⭐</option>
+      <option value="5" {% if request.GET.min_rating == '5' %}selected{% endif %}>5 ⭐</option>
+    </select>
+  </form>
+
+</div>
+
+<!-- Auth + Cart Section -->
+
+
+<!-- Messages -->
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert {{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+
+
+<form method="get" action="{% url 'search' %}">
+    <input type="text" name="query" placeholder="Search products..." class="search-input" style="border-radius: 8px;
+             color: white;">
+    <button type="submit" class="btn">🔍 Search</button>
+</form>
+
+
+<h2 style="text-align:center;">Our Products</h2>
+
+{% include "store/products.html" %}
+
+{% comment %}
+<!-- Product Display -->
+<div class="product-container">
+    {% if products %}
+        {% for product in products %}
+            <div class="product-card">
+                <h2>{{ product.name }}</h2>
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% endif %}
+                <p>{{ product.description }}</p>
+                <p class="price">₹{{ product.price }}</p>
+                <a href="{% url 'add_to_cart' product.id %}" class="btn">Add to Cart</a>
+                <!-- Wishlist Toggle Button -->
+<button class="wishlist-btn" data-product-id="{{ product.id }}">
+    {% if product.id in wishlist_items %}
+        ❤️
+    {% else %}
+        🤍
+    {% endif %}
+    
+</button>
+
+{% if user.is_authenticated %}
+  {% with user_reviews as reviews %}
+    {% if reviews|get_item:product.id %}
+      {% with reviews|get_item:product.id as user_review %}
+        <form method="POST" action="{% url 'add_review' product.id %}" class="review-form">
+            {% csrf_token %}
+            <label for="rating">Rating:</label>
+            <select name="rating" required style="width:70px">
+                {% for i in "12345" %}
+                    <option value="{{ i }}" {% if user_review.rating == i|add:'0' %}selected{% endif %}>{{ i }} ⭐</option>
+                {% endfor %}
+            </select><br>
+            <textarea  name="comment" class="comment" rows="4" maxlength="300" style="border-radius: 8px;
+            background-color: #8555ed; color: white;"
+            required>{{ user_review.comment }}</textarea><br>
+            <button type="submit" class="btn">Update Review</button>
+        </form>
+         <form method="POST" action="{% url 'delete_review' product.id %}" style="margin-top: 10px;">
+            {% csrf_token %}
+            <button type="submit" class="btn" style="background-color: #e74c3c;">Delete Review</button>
+        </form>
+      {% endwith %}
+    {% else %}
+        <!-- Empty review form if no review exists -->
+        <form method="POST" action="{% url 'add_review' product.id %}" class="review-form">
+            {% csrf_token %}
+            <label for="rating">Rating:</label>
+            <select name="rating" required style="width:70px">
+                {% for i in "12345" %}
+                   <option value="{{ i }}">{{ i }} ⭐</option>
+                {% endfor %}
+            </select><br>
+            <textarea name="comment" id="comment" placeholder="Write a review..." rows="4" maxlength="300"
+             style="border-radius: 8px;
+            background-color:rgb(93, 58, 163); color: white;"
+            required></textarea><br>
+            <button type="submit" class="btn">Submit Review</button>
+        </form>
+    {% endif %}
+  {% endwith %}
+{% else %}
+  <p><a href="{% url 'login' %}">Login</a> to review</p>
+{% endif %}
+
+
+
+            </div>
+            <!-- Show Existing Reviews -->
+<div class="reviews">
+    <strong>Reviews:</strong>
+    {% if product.reviews.all %}
+        {% for review in product.reviews.all %}
+            <div class="review-box">
+                <p><strong>{{ review.user.username }}</strong> - {{ review.rating }} ⭐  {{ review.comment }}</p>
+                <p></p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No reviews yet.</p>
+    {% endif %}
+</div>
+
+        {% endfor %}
+    {% else %}
+        <p class="empty-message">No products found.</p>
+    {% endif %}
+</div>
+{% endcomment %}
+<script>
+  document.getElementById('nav-selectt').addEventListener('change', function () {
+    const url = this.value;
+    if (url) {
+      // For logout, use form submission (POST), not GET
+      if (url.includes("{% url 'logout' %}")) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        const csrfToken = document.getElementById('csrf-token').value;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrfmiddlewaretoken';
+        csrfInput.value = csrfToken;
+
+        form.appendChild(csrfInput);
+        document.body.appendChild(form);
+        form.submit();
+      } else {
+        window.location.href = url;
+      }
+    }
+  });
+
+
+
+document.querySelectorAll('.wishlist-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const productId = btn.getAttribute('data-product-id');
+
+        fetch(`/wishlist/toggle/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `product_id=${productId}`
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'added') {
+                btn.textContent = '❤️';
+            } else if (data.status === 'removed') {
+                btn.textContent = '🤍';
+            }
+        });
+    });
+});
+
+
+
+const select = document.getElementById("nav-selectt");
+let lastValue = select.value;
+  select.addEventListener("mouseover", () => {
+    select.focus();  // Focus brings up the dropdown on some browsers
+  });
+
+  select.addEventListener("change", function () {
+    const url = this.value;
+    if (url) {
+      window.location.href = url;
+    }
+    lastValue=url;
+  });
+
+
+
+ 
+ 
+
+</script>
+
+</body>
+</html>

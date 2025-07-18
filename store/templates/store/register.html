@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'store/login.css' %}">
+</head>
+<body>
+<div class="login-container">
+    <h2>Create New Account</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="error-message">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="password" name="password2" placeholder="Confirm Password" required>
+        <button type="submit">Register</button>
+    </form>
+
+    <p style="text-align:center; margin-top: 20px;">
+        Already have an account?
+        <a href="{% url 'login' %}" class="create-user-btn">Login Here</a>
+    </p>
+</div>
+</body>
+</html>

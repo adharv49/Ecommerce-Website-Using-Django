@@ -1,0 +1,266 @@
+/* General page styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #f0f2f5, #ffffff);
+    margin: 0;
+    padding: 0 30px;
+}
+
+/* Headings */
+h1, h2 {
+    color: #222;
+}
+
+/* Welcome and button section */
+.auth-section {
+    margin: 20px 0;
+}
+
+/* Product card container */
+
+.product {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
+}
+.product:hover {
+    transform: translateY(-5px);
+}
+
+/* Product image */
+.product img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+/* Price text */
+.price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #28a745;
+    margin-bottom: 10px;
+}
+
+/* Styled button */
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* No products text */
+.empty-message {
+    font-style: italic;
+    color: #555;
+}
+/*
+select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+    *
+/* Top bar layout */
+.top-bar {
+   
+    display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  
+  background-color: #f7f7f7;
+  padding: 10px;
+  margin-bottom: 20px;
+  
+}
+
+.top-bar select,button,a,#nav-selectt{
+    display: inline-block;
+    position: relative;
+    
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.top-bar a{
+    height: 50px;width:60px;
+    vertical-align: middle;
+}
+
+.btn.danger {
+    background-color: #dc3545;
+    color: white;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.profile-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-container p {
+    font-size: 16px;
+    margin: 10px 0;
+}
+.btn {
+    padding: 8px 12px;
+    background-color: #2e86de;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+.red-heart {
+    background-color: #ffdde0;
+    color: red;
+    cursor: default;
+}
+.wishlist-btn {
+    background-color: #0130f0;  /* light gray background */
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px 10px;
+    color: black;  /* make sure text color stands out */
+    transition: 0.2s ease;
+}
+.review-form {
+    background-color: #f9f9f9;
+     border: 3px dashed black;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.comment textarea {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 12px;   /* 👈 Rounded corners */
+    resize: vertical;      /* Allows resizing vertically only */
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
+    background-color: #fdfdfd;
+}
+
+.review-form select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.review-form button {
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.review-form button:hover {
+    background-color: #0056b3;
+}
+
+.reviews{
+    border: dotted black;
+    border-radius: 8px;
+}
+
+
+.custom-select {
+      position: relative;
+      display: inline-block;
+      width: 200px;
+      user-select: none;
+    }
+
+    .selected {
+      background-color: #3498db;
+      color: white;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      display: none;
+      background-color: white;
+      border: 1px solid #ccc;
+      z-index: 1000;
+    }
+
+    .custom-select:hover .options {
+      display: block;
+    }
+
+    .option {
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .option:hover {
+      background-color: #eee;
+    }
+
+.home-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    transition: background-color 0.3s ease;
+  }
+
+    .home-button:hover {
+    background-color: #0056b3;
+  }

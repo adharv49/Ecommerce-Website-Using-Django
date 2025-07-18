@@ -1,0 +1,30 @@
+<h2>Checkout</h2>
+{% for item in products %}
+  <p>{{ item.name }} – ₹{{ item.price }}</p>
+{% empty %}
+  <p>Your cart is empty.</p>
+{% endfor %}
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout</title>
+</head>
+<body>
+    <h2>Checkout</h2>
+    <p><strong>Product:</strong> {{ product.name }}</p>
+    <p><strong>Price:</strong> ₹{{ product.price }}</p>
+
+    <form method="POST" action="">
+        {% csrf_token %}
+        <!-- Add user details, payment options etc. here -->
+        <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px;">
+            Confirm Purchase
+        </button>
+    </form>
+
+    <br>
+    <button onclick="history.back()" style="padding: 8px 16px;">⬅️ Back</button>
+</body>
+</html>
